@@ -11,5 +11,5 @@ spec:
           command: ["dotnet", "Wafra.api.dll", "--migrate"]
           env:
             - name: ConnectionStrings__Default
-              value: "Host=postgres;Port=5432;Database=WafraDB;Username=postgres;Password=postgres"
+              value: "Server=postgres;Port=5432;Database=WafraDB;User Id=postgres;Password=postgres;Include Error Detail=true"
       restartPolicy: Never
