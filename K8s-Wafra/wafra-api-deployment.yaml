@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wafra-api
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: wafra-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        app: wafra-api
+    spec:
+      containers:
+        - name: wafra-api
+          image: abobker/wafra-api:1.2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            # ConfigMap
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: wafra-api-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: wafra-api-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: wafra-api-config
+                  key: DB_NAME
+
+            # secret
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: wafra-api-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wafra-api-secret
+                  key: DB_PASSWORD
+            - name: ConnectionStrings__Default
+              value: "Host=$(DB_HOST);Port=$(DB_PORT);Database=$(DB_NAME);Username=$(DB_USER);Password=$(DB_PASSWORD)"
+
+            - name: RunMigrations
+              value: "false"

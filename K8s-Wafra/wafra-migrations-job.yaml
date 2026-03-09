@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wafra-migrations
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: abobker/wafra-api:1.2
+          command: ["dotnet", "Wafra.api.dll", "--migrate"]
+          env:
+            - name: ConnectionStrings__Default
+              value: "Host=postgres;Port=5432;Database=WafraDB;Username=postgres;Password=postgres"
+      restartPolicy: Never
